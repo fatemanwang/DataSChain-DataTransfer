@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>data transmission</title>
+    <link rel="stylesheet" type="text/css" href="/layui/css/layui.css">
+</head>
+<body>
+
+
+<script src="/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    layui.use(['layer', 'form'], function(){
+        var layer = layui.layer
+            ,form = layui.form
+            ,$=layui.jquery;
+
+        var refresh=function (){
+            $.ajax({
+                url:"/request",
+                success:function(data){
+                    console.log("data:"+data)
+                    if(data[0]==0){
+                        alert("There are currently no data download requests")
+                    }else{
+                        //Data Request Query Box
+                        layer.confirm(
+                            'Do you agree to transfer to'+data[1]+" "+data[2]+'data？',
+                            //Below are the configuration options
+                            {
+                                title:'currently have'+data[0]+"requests",
+                                icon:3, //icon
+                                btn: ['agree','refuse']
+                            },
+                            function(){
+                                layer.msg('Data transferred successfully', {icon: 1});
+
+
+                                $.post("/send",{
+                                    // opeAddress:opeAddress,
+                                    // port:port,
+                                    // downfile:downfile
+                                })
+
+
+                            },
+                            function(){
+                                layer.msg('Data transfer has been declined', {
+                                    time: 20000, //Automatically shut down after 20s
+                                    btn: ['OK']
+                                });
+
+                                $.post("/refuse",{
+
+                                })
+
+                            },
+                            function(){
+                            }
+                        );
+                    }
+
+                }
+            })
+        }
+        setInterval(refresh,10000)
+
+    });
+</script>
+</body>
+</html>
